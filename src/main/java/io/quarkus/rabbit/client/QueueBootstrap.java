@@ -17,7 +17,7 @@ public class QueueBootstrap {
 
     public void beginListener(@Observes StartupEvent ev){
 
-        //TODO increase this find package base of the application
+        //TODO improve find package base
         Reflections reflections = new Reflections("br.com.cassunde", new MethodParameterScanner());
 
         Set<Method> pathParamMethods = reflections.getMethodsWithAnyParamAnnotated(RabbitListenerConfiguration.class);
