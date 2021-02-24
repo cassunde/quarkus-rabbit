@@ -1,5 +1,7 @@
 package io.quarkus.rabbit.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -17,7 +19,7 @@ import java.util.concurrent.TimeoutException;
 public class QueueManager {
 
     @Inject
-    Event<RabbitMessage> event;
+    Event event;
 
     @ConfigProperty(name = "quarkus.rabbit.user")
     String user;
@@ -59,9 +61,8 @@ public class QueueManager {
         }
     }
 
-    private void sendListenerMessage(String message, String queue, Class<? extends Object> valueType){
-        RabbitMessage rabbitMessage = new RabbitMessage(message);
-        event.select(getTypeBinding(queue, valueType)).fire(rabbitMessage);
+    private void sendListenerMessage(String message, String queue, Class<? extends Object> valueType) throws JsonProcessingException {
+        event.select(getTypeBinding(queue, valueType)).fire(new ObjectMapper().readValue(message, valueType));
     }
 
     private TypeBinding getTypeBinding(String queue, Class<? extends Object> valueType) {
